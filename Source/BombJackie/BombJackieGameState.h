@@ -22,7 +22,7 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 	EGameState CurrentGameState = EGameState::Playing;
 
 	UPROPERTY(EditDefaultsOnly)
-	int TimeLeftSeconds = 5;
+	int TimeLeftSeconds = 100;
 
 	UPROPERTY(EditDefaultsOnly)
 	int Score = 300;

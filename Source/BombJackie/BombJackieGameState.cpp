@@ -11,6 +11,9 @@ void ABombJackieGameState::BeginPlay()
 	Super::BeginPlay();
 	CurrentGameState = EGameState::Playing;
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ABombJackieGameState::CountDown, 1.0f, true);
+
+	OnIncreaseScore.ExecuteIfBound(Score);
+	OnCountDown.ExecuteIfBound(TimeLeftSeconds);
 }
 
 void ABombJackieGameState::CountDown()
@@ -30,12 +33,6 @@ void ABombJackieGameState::HandleDecreaseTime(const int Seconds)
 {
 	TimeLeftSeconds -= Seconds;
 	TimeLeftSeconds = std::max(TimeLeftSeconds, 0);
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White,
-		                                 FString::Printf(TEXT("Time left: %d"), TimeLeftSeconds));
-	}
 
 	OnCountDown.ExecuteIfBound(TimeLeftSeconds);
 
