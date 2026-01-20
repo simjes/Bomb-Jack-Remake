@@ -14,6 +14,10 @@ UCLASS()
 class BOMBJACKIE_API UGameHUD : public UUserWidget
 {
 	GENERATED_BODY()
+	virtual void NativeOnInitialized() override;
+
+	void UpdateScore(int Score) const;
+	void UpdateCountDown(int TimeSeconds) const;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))

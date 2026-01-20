@@ -6,12 +6,12 @@ void ABombJackieGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(GameHUDReference))
+	if (GameHUDReference)
 	{
 		GameHUDWidget = CreateWidget(GetWorld(), GameHUDReference);
 	}
 
-	if (IsValid(GameHUDWidget))
+	if (GameHUDWidget)
 	{
 		GameHUDWidget->AddToViewport();
 	}
