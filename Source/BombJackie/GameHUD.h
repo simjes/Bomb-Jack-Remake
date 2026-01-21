@@ -18,6 +18,7 @@ class BOMBJACKIE_API UGameHUD : public UUserWidget
 
 	void UpdateScore(int Score) const;
 	void UpdateCountDown(int TimeSeconds) const;
+	void UpdateHitPoints(int HitPoints) const;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
@@ -25,4 +26,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UTextBlock> CountdownText;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UTextBlock> HitPointsText;
 };
