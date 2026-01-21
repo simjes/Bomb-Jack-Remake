@@ -3,8 +3,10 @@
 
 #include "GameHUD.h"
 
+#include "BombJackieCharacter.h"
 #include "BombJackieGameState.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 
 void UGameHUD::NativeOnInitialized()
 {
@@ -14,6 +16,13 @@ void UGameHUD::NativeOnInitialized()
 	{
 		GS->OnCountDown.BindUObject(this, &UGameHUD::UpdateCountDown);
 		GS->OnIncreaseScore.BindUObject(this, &UGameHUD::UpdateScore);
+	}
+
+	if (ACharacter* PC = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		// TODO: this is probably unsafe
+		ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(PC);
+		Character->OnDecreaseHealth.BindUObject(this, &UGameHUD::UpdateHitPoints);
 	}
 }
 
@@ -30,5 +39,13 @@ void UGameHUD::UpdateCountDown(const int TimeSeconds) const
 	CountdownText.Get()->SetText(FText::Format(
 		FText::FromString("Time: {0}"),
 		TimeSeconds
+	));
+}
+
+void UGameHUD::UpdateHitPoints(const int HitPoints) const
+{
+	HitPointsText.Get()->SetText(FText::Format(
+		FText::FromString("HP: {0}"),
+		HitPoints
 	));
 }
