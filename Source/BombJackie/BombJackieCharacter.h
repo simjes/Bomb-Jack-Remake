@@ -14,8 +14,7 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-DECLARE_DELEGATE_OneParam(FOnDecreaseHealth, int);
-DECLARE_DELEGATE_OneParam(FOnIncreaseHealth, int);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, int, Amount);
 
 /**
  *  A simple player-controllable third person character
@@ -56,14 +55,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
-	UFUNCTION()
-	virtual void HandleDecreaseHealth(int HP);
-	UFUNCTION()
-	virtual void HandleIncreaseHealth(int HP);
-
 public:
 	/** Constructor */
 	ABombJackieCharacter();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void DecreaseHealth(int Amount);
+	UFUNCTION(BlueprintCallable)
+	virtual void IncreaseHealth(int Amount);
 
 protected:
 	/** Initialize input action bindings */
@@ -98,6 +97,6 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-	FOnDecreaseHealth OnDecreaseHealth;
-	FOnIncreaseHealth OnIncreaseHealth;
+	UPROPERTY(BlueprintAssignable)
+	FOnHealthChanged OnHealthChanged;
 };

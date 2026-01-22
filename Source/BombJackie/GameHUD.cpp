@@ -18,11 +18,22 @@ void UGameHUD::NativeOnInitialized()
 		GS->OnIncreaseScore.BindUObject(this, &UGameHUD::UpdateScore);
 	}
 
-	if (ACharacter* PC = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		// TODO: this is probably unsafe
-		ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(PC);
-		Character->OnDecreaseHealth.BindUObject(this, &UGameHUD::UpdateHitPoints);
+		Character->OnHealthChanged.AddUniqueDynamic(this, &UGameHUD::UpdateHitPoints);
+		// TODO: unbind on end?
+	}
+}
+
+void UGameHUD::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		Character->OnHealthChanged.RemoveDynamic(this, &UGameHUD::UpdateHitPoints);
 	}
 }
 
@@ -42,7 +53,7 @@ void UGameHUD::UpdateCountDown(const int TimeSeconds) const
 	));
 }
 
-void UGameHUD::UpdateHitPoints(const int HitPoints) const
+void UGameHUD::UpdateHitPoints(const int HitPoints)
 {
 	HitPointsText.Get()->SetText(FText::Format(
 		FText::FromString("HP: {0}"),
