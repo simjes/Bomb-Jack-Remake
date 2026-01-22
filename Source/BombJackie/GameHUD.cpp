@@ -14,19 +14,35 @@ void UGameHUD::NativeOnInitialized()
 
 	if (ABombJackieGameState* GS = GetWorld()->GetGameState<ABombJackieGameState>())
 	{
-		GS->OnCountDown.BindUObject(this, &UGameHUD::UpdateCountDown);
-		GS->OnIncreaseScore.BindUObject(this, &UGameHUD::UpdateScore);
+		GS->OnCountDown.AddUniqueDynamic(this, &UGameHUD::UpdateCountDown);
+		GS->OnIncreaseScore.AddUniqueDynamic(this, &UGameHUD::UpdateScore);
 	}
 
-	if (ACharacter* PC = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		// TODO: this is probably unsafe
-		ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(PC);
-		Character->OnDecreaseHealth.BindUObject(this, &UGameHUD::UpdateHitPoints);
+		Character->OnHealthChanged.AddUniqueDynamic(this, &UGameHUD::UpdateHitPoints);
 	}
 }
 
-void UGameHUD::UpdateScore(const int Score) const
+void UGameHUD::NativeDestruct()
+{
+	if (ABombJackieGameState* GS = GetWorld()->GetGameState<ABombJackieGameState>())
+	{
+		GS->OnCountDown.RemoveDynamic(this, &UGameHUD::UpdateCountDown);
+		GS->OnIncreaseScore.RemoveDynamic(this, &UGameHUD::UpdateScore);
+	}
+
+	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
+		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		Character->OnHealthChanged.RemoveDynamic(this, &UGameHUD::UpdateHitPoints);
+	}
+	Super::NativeDestruct();
+}
+
+
+void UGameHUD::UpdateScore(const int Score)
 {
 	ScoreText.Get()->SetText(FText::Format(
 		FText::FromString("Score: {0}"),
@@ -34,7 +50,7 @@ void UGameHUD::UpdateScore(const int Score) const
 	));
 }
 
-void UGameHUD::UpdateCountDown(const int TimeSeconds) const
+void UGameHUD::UpdateCountDown(const int TimeSeconds)
 {
 	CountdownText.Get()->SetText(FText::Format(
 		FText::FromString("Time: {0}"),
@@ -42,7 +58,7 @@ void UGameHUD::UpdateCountDown(const int TimeSeconds) const
 	));
 }
 
-void UGameHUD::UpdateHitPoints(const int HitPoints) const
+void UGameHUD::UpdateHitPoints(const int HitPoints)
 {
 	HitPointsText.Get()->SetText(FText::Format(
 		FText::FromString("HP: {0}"),
