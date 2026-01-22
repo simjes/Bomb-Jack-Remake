@@ -15,6 +15,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 DECLARE_DELEGATE_OneParam(FOnDecreaseHealth, int);
+DECLARE_DELEGATE_OneParam(FOnIncreaseHealth, int);
 
 /**
  *  A simple player-controllable third person character
@@ -35,7 +36,7 @@ class ABombJackieCharacter : public ACharacter
 
 	UPROPERTY(EditDefaultsOnly)
 	int HitPoints = 3;
-	
+
 	virtual void BeginPlay() override;
 
 protected:
@@ -56,7 +57,9 @@ protected:
 	UInputAction* MouseLookAction;
 
 	UFUNCTION()
-	virtual void HandleDecreaseHealth();
+	virtual void HandleDecreaseHealth(int HP);
+	UFUNCTION()
+	virtual void HandleIncreaseHealth(int HP);
 
 public:
 	/** Constructor */
@@ -96,4 +99,5 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	FOnDecreaseHealth OnDecreaseHealth;
+	FOnIncreaseHealth OnIncreaseHealth;
 };

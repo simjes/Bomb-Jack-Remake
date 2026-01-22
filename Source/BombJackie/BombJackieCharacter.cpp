@@ -19,12 +19,19 @@ void ABombJackieCharacter::BeginPlay()
 	OnDecreaseHealth.ExecuteIfBound(HitPoints);
 }
 
-void ABombJackieCharacter::HandleDecreaseHealth()
+void ABombJackieCharacter::HandleDecreaseHealth(int HP)
 {
-	HitPoints--;
+	HitPoints -= HP;
 	HitPoints = std::max(HitPoints, 0);
 
 	OnDecreaseHealth.ExecuteIfBound(HitPoints);
+}
+
+void ABombJackieCharacter::HandleIncreaseHealth(int HP)
+{
+	HitPoints += HP;
+
+	OnIncreaseHealth.ExecuteIfBound(HitPoints);
 }
 
 ABombJackieCharacter::ABombJackieCharacter()
