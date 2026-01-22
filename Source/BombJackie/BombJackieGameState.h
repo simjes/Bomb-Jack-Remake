@@ -33,7 +33,9 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 	GENERATED_BODY()
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void CountDown();
+	virtual void HandleGameOver();
 
 protected:
 	UFUNCTION()
@@ -41,6 +43,9 @@ protected:
 
 	UFUNCTION()
 	virtual void DecreaseTime(int Seconds);
+
+	UFUNCTION()
+	virtual void HandleHitPoints(int HitPoints);
 
 public:
 	UPROPERTY(BlueprintAssignable)
