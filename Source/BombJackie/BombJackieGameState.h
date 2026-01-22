@@ -12,8 +12,9 @@
  */
 
 
-DECLARE_DELEGATE_OneParam(FOnIncreaseScore, int)
-DECLARE_DELEGATE_OneParam(FOnCountDown, int)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnIncreaseScore, int, Amount);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCountDown, int, Amount);
 
 UCLASS()
 class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
@@ -32,16 +33,23 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 	GENERATED_BODY()
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void CountDown();
+	virtual void HandleGameOver();
 
 protected:
 	UFUNCTION()
-	virtual void HandleIncreaseScore(int Points);
+	virtual void IncreaseScore(int Points);
 
 	UFUNCTION()
-	virtual void HandleDecreaseTime(int Seconds);
+	virtual void DecreaseTime(int Seconds);
+
+	UFUNCTION()
+	virtual void HandleHitPoints(int HitPoints);
 
 public:
+	UPROPERTY(BlueprintAssignable)
 	FOnIncreaseScore OnIncreaseScore;
+	UPROPERTY(BlueprintAssignable)
 	FOnCountDown OnCountDown;
 };

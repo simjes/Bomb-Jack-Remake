@@ -16,7 +16,7 @@ class ABombJackieGameMode : public AGameModeBase
 	GENERATED_BODY()
 	virtual void BeginPlay() override;
 	UPROPERTY(EditAnywhere, Category= "UI")
-	TSubclassOf<UUserWidget> GameHUDReference = nullptr;
+	TSubclassOf<UUserWidget> GameHUDReference;
 
 public:
 	/** Constructor */
