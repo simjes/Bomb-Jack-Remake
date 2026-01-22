@@ -14,30 +14,35 @@ void UGameHUD::NativeOnInitialized()
 
 	if (ABombJackieGameState* GS = GetWorld()->GetGameState<ABombJackieGameState>())
 	{
-		GS->OnCountDown.BindUObject(this, &UGameHUD::UpdateCountDown);
-		GS->OnIncreaseScore.BindUObject(this, &UGameHUD::UpdateScore);
+		GS->OnCountDown.AddUniqueDynamic(this, &UGameHUD::UpdateCountDown);
+		GS->OnIncreaseScore.AddUniqueDynamic(this, &UGameHUD::UpdateScore);
 	}
 
 	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
 		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		Character->OnHealthChanged.AddUniqueDynamic(this, &UGameHUD::UpdateHitPoints);
-		// TODO: unbind on end?
 	}
 }
 
-void UGameHUD::BeginDestroy()
+void UGameHUD::NativeDestruct()
 {
-	Super::BeginDestroy();
+	if (ABombJackieGameState* GS = GetWorld()->GetGameState<ABombJackieGameState>())
+	{
+		GS->OnCountDown.RemoveDynamic(this, &UGameHUD::UpdateCountDown);
+		GS->OnIncreaseScore.RemoveDynamic(this, &UGameHUD::UpdateScore);
+	}
 
 	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
 		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		Character->OnHealthChanged.RemoveDynamic(this, &UGameHUD::UpdateHitPoints);
 	}
+	Super::NativeDestruct();
 }
 
-void UGameHUD::UpdateScore(const int Score) const
+
+void UGameHUD::UpdateScore(const int Score)
 {
 	ScoreText.Get()->SetText(FText::Format(
 		FText::FromString("Score: {0}"),
@@ -45,7 +50,7 @@ void UGameHUD::UpdateScore(const int Score) const
 	));
 }
 
-void UGameHUD::UpdateCountDown(const int TimeSeconds) const
+void UGameHUD::UpdateCountDown(const int TimeSeconds)
 {
 	CountdownText.Get()->SetText(FText::Format(
 		FText::FromString("Time: {0}"),

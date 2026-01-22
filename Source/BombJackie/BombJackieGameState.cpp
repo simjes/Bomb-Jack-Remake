@@ -12,29 +12,29 @@ void ABombJackieGameState::BeginPlay()
 	CurrentGameState = EGameState::Playing;
 	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ABombJackieGameState::CountDown, 1.0f, true);
 
-	OnIncreaseScore.ExecuteIfBound(Score);
-	OnCountDown.ExecuteIfBound(TimeLeftSeconds);
+	OnIncreaseScore.Broadcast(Score);
+	OnCountDown.Broadcast(TimeLeftSeconds);
 }
 
 void ABombJackieGameState::CountDown()
 {
-	ABombJackieGameState::HandleDecreaseTime(1);
+	ABombJackieGameState::DecreaseTime(1);
 }
 
 
-void ABombJackieGameState::HandleIncreaseScore(const int Points)
+void ABombJackieGameState::IncreaseScore(const int Points)
 {
 	Score += Points;
 
-	OnIncreaseScore.ExecuteIfBound(Score);
+	OnIncreaseScore.Broadcast(Score);
 }
 
-void ABombJackieGameState::HandleDecreaseTime(const int Seconds)
+void ABombJackieGameState::DecreaseTime(const int Seconds)
 {
 	TimeLeftSeconds -= Seconds;
 	TimeLeftSeconds = std::max(TimeLeftSeconds, 0);
 
-	OnCountDown.ExecuteIfBound(TimeLeftSeconds);
+	OnCountDown.Broadcast(TimeLeftSeconds);
 
 	if (TimeLeftSeconds == 0)
 	{
