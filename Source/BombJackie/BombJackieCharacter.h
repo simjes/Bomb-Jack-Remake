@@ -34,7 +34,7 @@ class ABombJackieCharacter : public ACharacter
 	UCameraComponent* FollowCamera;
 
 	UPROPERTY(EditDefaultsOnly)
-	int HitPoints = 3;
+	int Hp = 3;
 
 	virtual void BeginPlay() override;
 

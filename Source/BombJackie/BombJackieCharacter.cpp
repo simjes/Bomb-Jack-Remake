@@ -16,22 +16,22 @@ void ABombJackieCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnHealthChanged.Broadcast(HitPoints);
+	OnHealthChanged.Broadcast(Hp);
 }
 
 void ABombJackieCharacter::DecreaseHealth(const int Amount)
 {
-	HitPoints -= Amount;
-	HitPoints = std::max(HitPoints, 0);
+	Hp -= Amount;
+	Hp = std::max(Hp, 0);
 
-	OnHealthChanged.Broadcast(HitPoints);
+	OnHealthChanged.Broadcast(Hp);
 }
 
 void ABombJackieCharacter::IncreaseHealth(const int Amount)
 {
-	HitPoints += Amount;
+	Hp += Amount;
 
-	OnHealthChanged.Broadcast(HitPoints);
+	OnHealthChanged.Broadcast(Hp);
 }
 
 ABombJackieCharacter::ABombJackieCharacter()
