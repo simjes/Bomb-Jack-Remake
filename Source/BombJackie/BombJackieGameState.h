@@ -7,14 +7,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "BombJackieGameState.generated.h"
 
-/**
- * 
- */
-
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnIncreaseScore, int, Amount);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCountDown, int, Amount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangePyramidHp, int, Amount);
 
 UCLASS()
 class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
@@ -23,33 +16,21 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 	EGameState CurrentGameState = EGameState::Playing;
 
 	UPROPERTY(EditDefaultsOnly)
-	int TimeLeftSeconds = 100;
-
-	UPROPERTY(EditDefaultsOnly)
-	int Score = 300;
-
-	FTimerHandle CountdownTimerHandle;
+	int PyramidHp = 3;
 
 	GENERATED_BODY()
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual void CountDown();
 	virtual void HandleGameOver();
 
 protected:
 	UFUNCTION()
-	virtual void IncreaseScore(int Points);
-
-	UFUNCTION()
-	virtual void DecreaseTime(int Seconds);
-
-	UFUNCTION()
-	virtual void HandleHitPoints(int HitPoints);
+	virtual void HandlePlayerHpChanged(int Hp);
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FOnIncreaseScore OnIncreaseScore;
-	UPROPERTY(BlueprintAssignable)
-	FOnCountDown OnCountDown;
+	FOnChangePyramidHp OnPyramidHpChange;
+	UFUNCTION(BlueprintCallable)
+	virtual void DecreasePyramidHp(int Damage);
 };

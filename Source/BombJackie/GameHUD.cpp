@@ -14,14 +14,13 @@ void UGameHUD::NativeOnInitialized()
 
 	if (ABombJackieGameState* GS = GetWorld()->GetGameState<ABombJackieGameState>())
 	{
-		GS->OnCountDown.AddUniqueDynamic(this, &UGameHUD::UpdateCountDown);
-		GS->OnIncreaseScore.AddUniqueDynamic(this, &UGameHUD::UpdateScore);
+		GS->OnPyramidHpChange.AddUniqueDynamic(this, &UGameHUD::UpdatePyramidHp);
 	}
 
 	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
 		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		Character->OnHealthChanged.AddUniqueDynamic(this, &UGameHUD::UpdateHitPoints);
+		Character->OnHealthChanged.AddUniqueDynamic(this, &UGameHUD::UpdatePlayerHp);
 	}
 }
 
@@ -29,39 +28,30 @@ void UGameHUD::NativeDestruct()
 {
 	if (ABombJackieGameState* GS = GetWorld()->GetGameState<ABombJackieGameState>())
 	{
-		GS->OnCountDown.RemoveDynamic(this, &UGameHUD::UpdateCountDown);
-		GS->OnIncreaseScore.RemoveDynamic(this, &UGameHUD::UpdateScore);
+		GS->OnPyramidHpChange.AddUniqueDynamic(this, &UGameHUD::UpdatePyramidHp);
 	}
 
 	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
 		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		Character->OnHealthChanged.RemoveDynamic(this, &UGameHUD::UpdateHitPoints);
+		Character->OnHealthChanged.RemoveDynamic(this, &UGameHUD::UpdatePlayerHp);
 	}
 	Super::NativeDestruct();
 }
 
 
-void UGameHUD::UpdateScore(const int Score)
+void UGameHUD::UpdatePlayerHp(const int Hp)
 {
-	ScoreText.Get()->SetText(FText::Format(
-		FText::FromString("Score: {0}"),
-		Score
+	PlayerHpText.Get()->SetText(FText::Format(
+		FText::FromString("Player Hp: {0}"),
+		Hp
 	));
 }
 
-void UGameHUD::UpdateCountDown(const int TimeSeconds)
+void UGameHUD::UpdatePyramidHp(const int Hp)
 {
-	CountdownText.Get()->SetText(FText::Format(
-		FText::FromString("Time: {0}"),
-		TimeSeconds
-	));
-}
-
-void UGameHUD::UpdateHitPoints(const int HitPoints)
-{
-	HitPointsText.Get()->SetText(FText::Format(
-		FText::FromString("HP: {0}"),
-		HitPoints
+	PyramidHpText.Get()->SetText(FText::Format(
+		FText::FromString("Pyramid Hp: {0}"),
+		Hp
 	));
 }
