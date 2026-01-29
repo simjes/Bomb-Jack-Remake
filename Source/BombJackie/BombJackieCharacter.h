@@ -33,10 +33,20 @@ class ABombJackieCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
-	UPROPERTY(EditDefaultsOnly)
-	int Hp = 3;
+	UPROPERTY(EditAnywhere, Category="Materials")
+	UMaterialInterface* MaterialInvulnerability;
+
+	UPROPERTY(EditAnywhere, Category="Materials")
+	UMaterialInterface* MaterialOne;
+
+	UPROPERTY(EditAnywhere, Category="Materials")
+	UMaterialInterface* MaterialTwo;
+
+	FTimerHandle InvulnerableTimer;
 
 	virtual void BeginPlay() override;
+	void StartInvulnerability();
+	void EndInvulnerability();
 
 protected:
 	/** Jump Input Action */
@@ -54,6 +64,15 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
+
+	UPROPERTY(EditAnywhere, Category="Gameplay")
+	int Hp = 3;
+
+	UPROPERTY(EditAnywhere, Category="Gameplay")
+	float InvulnerabilitySeconds = 3;
+
+	UPROPERTY(EditAnywhere, Category="Gameplay")
+	bool IsInvulnerable = false;
 
 public:
 	/** Constructor */
