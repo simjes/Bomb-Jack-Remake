@@ -21,7 +21,6 @@ void ABombJackieCharacter::BeginPlay()
 
 void ABombJackieCharacter::StartInvulnerability()
 {
-	UE_LOG(LogTemp, Warning, TEXT("start invulvn"));
 	IsInvulnerable = true;
 	GetMesh()->SetMaterial(0, MaterialInvulnerability);
 	GetMesh()->SetMaterial(1, MaterialInvulnerability);
@@ -31,7 +30,6 @@ void ABombJackieCharacter::EndInvulnerability()
 {
 	IsInvulnerable = false;
 	GetWorldTimerManager().ClearTimer(InvulnerableTimer);
-	UE_LOG(LogTemp, Warning, TEXT("end invulvn"));
 	GetMesh()->SetMaterial(0, MaterialOne);
 	GetMesh()->SetMaterial(1, MaterialTwo);
 }
@@ -41,7 +39,6 @@ void ABombJackieCharacter::DecreaseHealth(const int Amount)
 	if (IsInvulnerable)
 	{
 		// Return early if the player is invulnerable
-		UE_LOG(LogTemp, Warning, TEXT("hit but invulnerable"));
 		return;
 	}
 
@@ -49,14 +46,12 @@ void ABombJackieCharacter::DecreaseHealth(const int Amount)
 	Hp = std::max(Hp, 0);
 
 	OnHealthChanged.Broadcast(Hp);
-	UE_LOG(LogTemp, Warning, TEXT("hit decreased hp"));
 
 	if (Hp > 0)
 	{
 		StartInvulnerability();
 		GetWorldTimerManager().SetTimer(InvulnerableTimer, this, &ABombJackieCharacter::EndInvulnerability,
 		                                InvulnerabilitySeconds, false);
-		UE_LOG(LogTemp, Warning, TEXT("hit, hp still not zero"));
 	}
 }
 
