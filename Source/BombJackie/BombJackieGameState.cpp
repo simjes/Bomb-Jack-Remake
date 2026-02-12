@@ -2,10 +2,9 @@
 
 
 #include "BombJackieGameState.h"
-
-
 #include "BombJackieCharacter.h"
 #include "TimerManager.h"
+#include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 
 void ABombJackieGameState::BeginPlay()
@@ -37,8 +36,14 @@ void ABombJackieGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ABombJackieGameState::HandleGameOver()
 {
 	CurrentGameState = EGameState::GameOver;
-	// TODO: send game over event
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Game Over"));
+
+	if (GameOverWidgetReference)
+	{
+		GameOverWidget = CreateWidget(GetWorld(), GameOverWidgetReference);
+		GameOverWidget->AddToViewport();
+	}
+
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
 
 void ABombJackieGameState::DecreasePyramidHp(const int Damage)
@@ -54,7 +59,7 @@ void ABombJackieGameState::DecreasePyramidHp(const int Damage)
 	}
 }
 
-void ABombJackieGameState::HandlePlayerHpChanged(int Hp)
+void ABombJackieGameState::HandlePlayerHpChanged(const int Hp)
 {
 	if (Hp == 0)
 	{

@@ -12,13 +12,16 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangePyramidHp, int, Amount);
 UCLASS()
 class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 {
+	GENERATED_BODY()
+
 	UPROPERTY(EditDefaultsOnly)
 	EGameState CurrentGameState = EGameState::Playing;
 
 	UPROPERTY(EditDefaultsOnly)
 	int PyramidHp = 3;
 
-	GENERATED_BODY()
+	UPROPERTY(EditAnywhere, Category= "UI")
+	TSubclassOf<UUserWidget> GameOverWidgetReference;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -31,6 +34,10 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnChangePyramidHp OnPyramidHpChange;
+
 	UFUNCTION(BlueprintCallable)
 	virtual void DecreasePyramidHp(int Damage);
+
+	UPROPERTY()
+	UUserWidget* GameOverWidget;
 };
