@@ -22,6 +22,8 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 
 	UPROPERTY(EditAnywhere, Category= "UI")
 	TSubclassOf<UUserWidget> GameOverWidgetReference;
+	UPROPERTY(EditAnywhere, Category= "UI")
+	TSubclassOf<UUserWidget> VictoryWidgetReference;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -38,6 +40,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void DecreasePyramidHp(int Damage);
 
+	UFUNCTION(BlueprintCallable)
+	virtual void HandleVictory();
+
 	UPROPERTY()
 	UUserWidget* GameOverWidget;
+
+	UPROPERTY()
+	UUserWidget* VictoryWidget;
 };
