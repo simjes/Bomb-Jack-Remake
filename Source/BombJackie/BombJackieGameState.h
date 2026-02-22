@@ -9,6 +9,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangePyramidHp, int, Amount);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeBombsLeft, int, Amount);
+
 UCLASS()
 class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 {
@@ -34,8 +36,11 @@ protected:
 	virtual void HandlePlayerHpChanged(int Hp);
 
 public:
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable)
 	FOnChangePyramidHp OnPyramidHpChange;
+
+	UPROPERTY(BlueprintCallable)
+	FOnChangeBombsLeft OnBombsLeftChange;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DecreasePyramidHp(int Damage);
