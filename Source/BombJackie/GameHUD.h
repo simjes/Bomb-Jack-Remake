@@ -21,6 +21,8 @@ class BOMBJACKIE_API UGameHUD : public UUserWidget
 	void UpdatePlayerHp(int Hp);
 	UFUNCTION(BlueprintCallable)
 	void UpdatePyramidHp(int Hp);
+	UFUNCTION(BlueprintCallable)
+	void UpdateBombsLeft(int Amount);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
@@ -28,4 +30,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UTextBlock> PlayerHpText;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UTextBlock> RemainingBombsText;
 };

@@ -32,7 +32,6 @@ void ABombJackieGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-
 void ABombJackieGameState::HandleGameOver()
 {
 	CurrentGameState = EGameState::GameOver;
@@ -41,6 +40,25 @@ void ABombJackieGameState::HandleGameOver()
 	{
 		GameOverWidget = CreateWidget(GetWorld(), GameOverWidgetReference);
 		GameOverWidget->AddToViewport();
+	}
+
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+}
+
+void ABombJackieGameState::HandleVictory()
+{
+	if (CurrentGameState != EGameState::Playing)
+	{
+		// We return early if the game was lost by the last bomb exploding
+		return;
+	}
+
+	CurrentGameState = EGameState::Victory;
+
+	if (VictoryWidgetReference)
+	{
+		VictoryWidget = CreateWidget(GetWorld(), VictoryWidgetReference);
+		VictoryWidget->AddToViewport();
 	}
 
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
