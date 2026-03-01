@@ -47,6 +47,11 @@ void ABombJackieGameState::HandleVictory()
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
 
+void ABombJackieGameState::BroadcastBombsChanged(const int Amount)
+{
+	OnBombsLeftChange.Broadcast(Amount);
+}
+
 void ABombJackieGameState::DecreasePyramidHp(const int Damage)
 {
 	PyramidHp -= Damage;

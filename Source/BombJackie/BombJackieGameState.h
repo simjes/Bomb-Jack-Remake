@@ -38,8 +38,11 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnChangePyramidHp OnPyramidHpChange;
 
-	UPROPERTY(BlueprintCallable)
+	UPROPERTY(BlueprintAssignable)
 	FOnChangeBombsLeft OnBombsLeftChange;
+
+	UFUNCTION(BlueprintCallable)
+	void BroadcastBombsChanged(int Amount);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DecreasePyramidHp(int Damage);
