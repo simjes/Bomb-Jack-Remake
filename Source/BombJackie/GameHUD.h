@@ -18,14 +18,9 @@ class BOMBJACKIE_API UGameHUD : public UUserWidget
 	virtual void NativeDestruct() override;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdatePyramidHp(int Hp);
-	UFUNCTION(BlueprintCallable)
 	void UpdateBombsLeft(int Amount);
 
 protected:
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UTextBlock> PyramidHpText;
-
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UTextBlock> RemainingBombsText;
 };
