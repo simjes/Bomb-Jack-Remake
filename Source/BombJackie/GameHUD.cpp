@@ -17,12 +17,6 @@ void UGameHUD::NativeOnInitialized()
 		GS->OnPyramidHpChange.AddUniqueDynamic(this, &UGameHUD::UpdatePyramidHp);
 		GS->OnBombsLeftChange.AddUniqueDynamic(this, &UGameHUD::UpdateBombsLeft);
 	}
-
-	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		Character->OnHealthChanged.AddUniqueDynamic(this, &UGameHUD::UpdatePlayerHp);
-	}
 }
 
 void UGameHUD::NativeDestruct()
@@ -33,21 +27,7 @@ void UGameHUD::NativeDestruct()
 		GS->OnBombsLeftChange.RemoveDynamic(this, &UGameHUD::UpdateBombsLeft);
 	}
 
-	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		Character->OnHealthChanged.RemoveDynamic(this, &UGameHUD::UpdatePlayerHp);
-	}
 	Super::NativeDestruct();
-}
-
-
-void UGameHUD::UpdatePlayerHp(const int Hp)
-{
-	PlayerHpText.Get()->SetText(FText::Format(
-		FText::FromString("Player Hp: {0}"),
-		Hp
-	));
 }
 
 void UGameHUD::UpdatePyramidHp(const int Hp)

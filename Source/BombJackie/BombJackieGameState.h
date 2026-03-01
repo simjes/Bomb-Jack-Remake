@@ -28,12 +28,7 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 	TSubclassOf<UUserWidget> VictoryWidgetReference;
 
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void HandleGameOver();
-
-protected:
-	UFUNCTION()
-	virtual void HandlePlayerHpChanged(int Hp);
 
 public:
 	UPROPERTY(BlueprintCallable)

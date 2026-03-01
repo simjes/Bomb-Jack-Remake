@@ -13,23 +13,6 @@ void ABombJackieGameState::BeginPlay()
 	CurrentGameState = EGameState::Playing;
 
 	OnPyramidHpChange.Broadcast(PyramidHp);
-
-	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		Character->OnHealthChanged.AddUniqueDynamic(this, &ABombJackieGameState::HandlePlayerHpChanged);
-	}
-}
-
-void ABombJackieGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		Character->OnHealthChanged.RemoveDynamic(this, &ABombJackieGameState::HandlePlayerHpChanged);
-	}
-
-	Super::EndPlay(EndPlayReason);
 }
 
 void ABombJackieGameState::HandleGameOver()
@@ -72,14 +55,6 @@ void ABombJackieGameState::DecreasePyramidHp(const int Damage)
 	OnPyramidHpChange.Broadcast(PyramidHp);
 
 	if (PyramidHp == 0)
-	{
-		HandleGameOver();
-	}
-}
-
-void ABombJackieGameState::HandlePlayerHpChanged(const int Hp)
-{
-	if (Hp == 0)
 	{
 		HandleGameOver();
 	}
