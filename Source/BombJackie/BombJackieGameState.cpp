@@ -13,25 +13,7 @@ void ABombJackieGameState::BeginPlay()
 	CurrentGameState = EGameState::Playing;
 
 	OnPyramidHpChange.Broadcast(PyramidHp);
-
-	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		Character->OnHealthChanged.AddUniqueDynamic(this, &ABombJackieGameState::HandlePlayerHpChanged);
-	}
 }
-
-void ABombJackieGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	if (ABombJackieCharacter* Character = Cast<ABombJackieCharacter>(
-		UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		Character->OnHealthChanged.RemoveDynamic(this, &ABombJackieGameState::HandlePlayerHpChanged);
-	}
-
-	Super::EndPlay(EndPlayReason);
-}
-
 
 void ABombJackieGameState::HandleGameOver()
 {
@@ -46,6 +28,30 @@ void ABombJackieGameState::HandleGameOver()
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
 
+void ABombJackieGameState::HandleVictory()
+{
+	if (CurrentGameState != EGameState::Playing)
+	{
+		// We return early if the game was lost by the last bomb exploding
+		return;
+	}
+
+	CurrentGameState = EGameState::Victory;
+
+	if (VictoryWidgetReference)
+	{
+		VictoryWidget = CreateWidget(GetWorld(), VictoryWidgetReference);
+		VictoryWidget->AddToViewport();
+	}
+
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+}
+
+void ABombJackieGameState::BroadcastBombsChanged(const int Amount)
+{
+	OnBombsLeftChange.Broadcast(Amount);
+}
+
 void ABombJackieGameState::DecreasePyramidHp(const int Damage)
 {
 	PyramidHp -= Damage;
@@ -54,14 +60,6 @@ void ABombJackieGameState::DecreasePyramidHp(const int Damage)
 	OnPyramidHpChange.Broadcast(PyramidHp);
 
 	if (PyramidHp == 0)
-	{
-		HandleGameOver();
-	}
-}
-
-void ABombJackieGameState::HandlePlayerHpChanged(const int Hp)
-{
-	if (Hp == 0)
 	{
 		HandleGameOver();
 	}

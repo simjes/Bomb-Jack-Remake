@@ -14,8 +14,6 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, int, Amount);
-
 /**
  *  A simple player-controllable third person character
  *  Implements a controllable orbiting camera
@@ -32,21 +30,6 @@ class ABombJackieCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-
-	UPROPERTY(EditAnywhere, Category="Materials")
-	UMaterialInterface* MaterialInvulnerability;
-
-	UPROPERTY(EditAnywhere, Category="Materials")
-	UMaterialInterface* MaterialOne;
-
-	UPROPERTY(EditAnywhere, Category="Materials")
-	UMaterialInterface* MaterialTwo;
-
-	FTimerHandle InvulnerableTimer;
-
-	virtual void BeginPlay() override;
-	void StartInvulnerability();
-	void EndInvulnerability();
 
 protected:
 	/** Jump Input Action */
@@ -65,23 +48,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
-	UPROPERTY(EditAnywhere, Category="Gameplay")
-	int Hp = 3;
-
-	UPROPERTY(EditAnywhere, Category="Gameplay")
-	float InvulnerabilitySeconds = 3;
-
-	UPROPERTY(EditAnywhere, Category="Gameplay")
-	bool IsInvulnerable = false;
-
 public:
 	/** Constructor */
 	ABombJackieCharacter();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void DecreaseHealth(int Amount);
-	UFUNCTION(BlueprintCallable)
-	virtual void IncreaseHealth(int Amount);
 
 protected:
 	/** Initialize input action bindings */
@@ -115,7 +84,4 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	UPROPERTY(BlueprintAssignable)
-	FOnHealthChanged OnHealthChanged;
 };
