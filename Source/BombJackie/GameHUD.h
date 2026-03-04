@@ -14,23 +14,4 @@ UCLASS()
 class BOMBJACKIE_API UGameHUD : public UUserWidget
 {
 	GENERATED_BODY()
-	virtual void NativeOnInitialized() override;
-	virtual void NativeDestruct() override;
-
-	UFUNCTION(BlueprintCallable)
-	void UpdatePlayerHp(int Hp);
-	UFUNCTION(BlueprintCallable)
-	void UpdatePyramidHp(int Hp);
-	UFUNCTION(BlueprintCallable)
-	void UpdateBombsLeft(int Amount);
-
-protected:
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UTextBlock> PyramidHpText;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UTextBlock> PlayerHpText;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UTextBlock> RemainingBombsText;
 };

@@ -19,28 +19,30 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 	UPROPERTY(EditDefaultsOnly)
 	EGameState CurrentGameState = EGameState::Playing;
 
-	UPROPERTY(EditDefaultsOnly)
-	int PyramidHp = 3;
-
 	UPROPERTY(EditAnywhere, Category= "UI")
 	TSubclassOf<UUserWidget> GameOverWidgetReference;
 	UPROPERTY(EditAnywhere, Category= "UI")
 	TSubclassOf<UUserWidget> VictoryWidgetReference;
 
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void HandleGameOver();
 
 protected:
-	UFUNCTION()
-	virtual void HandlePlayerHpChanged(int Hp);
+	UPROPERTY(BlueprintReadWrite)
+	int MaxPyramidHp = 3;
+
+	UPROPERTY(BlueprintReadWrite)
+	int PyramidHp = MaxPyramidHp;
 
 public:
-	UPROPERTY(BlueprintCallable)
+	UPROPERTY(BlueprintAssignable)
 	FOnChangePyramidHp OnPyramidHpChange;
 
-	UPROPERTY(BlueprintCallable)
+	UPROPERTY(BlueprintAssignable)
 	FOnChangeBombsLeft OnBombsLeftChange;
+
+	UFUNCTION(BlueprintCallable)
+	void BroadcastBombsChanged(int Amount);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DecreasePyramidHp(int Damage);
