@@ -2,4 +2,4 @@
 * text=auto
 
 # Example folder using LFS
-Content/Chaotic_Skies/** filter=lfs diff=lfs merge=lfs -text
+Content/Audio/** filter=lfs diff=lfs merge=lfs -text
