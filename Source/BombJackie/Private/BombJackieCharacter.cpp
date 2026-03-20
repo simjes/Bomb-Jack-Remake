@@ -12,6 +12,12 @@
 #include "InputActionValue.h"
 #include "BombJackie.h"
 
+void ABombJackieCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	LastSafeLocation = GetActorLocation();
+}
+
 ABombJackieCharacter::ABombJackieCharacter()
 {
 	// Set size for collision capsule
@@ -92,6 +98,12 @@ void ABombJackieCharacter::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void ABombJackieCharacter::Landed(const FHitResult& Hit)
+{
+	LastSafeLocation = Hit.Location;
+	Super::Landed(Hit);
 }
 
 void ABombJackieCharacter::DoMove(float Right, float Forward)
