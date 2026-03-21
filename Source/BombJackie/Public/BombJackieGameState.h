@@ -28,10 +28,10 @@ class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 	virtual void HandleGameOver();
 
 protected:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int MaxPyramidHp = 3;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int PyramidHp = MaxPyramidHp;
 
 public:
