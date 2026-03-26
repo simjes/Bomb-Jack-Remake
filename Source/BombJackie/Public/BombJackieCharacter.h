@@ -22,6 +22,8 @@ UCLASS(abstract)
 class ABombJackieCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	
+	virtual void BeginPlay() override;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
@@ -47,6 +49,9 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector LastSafeLocation;
 
 public:
 	/** Constructor */
@@ -61,6 +66,8 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+	
+	virtual void Landed(const FHitResult& Hit) override;
 
 public:
 	/** Handles move inputs from either controls or UI interfaces */
