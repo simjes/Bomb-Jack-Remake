@@ -15,6 +15,8 @@ UCLASS()
 class BOMBJACKIE_API ABombJackieGameState : public AGameStateBase
 {
 	GENERATED_BODY()
+	
+	FTimerHandle PauseOnGameOverTimerHandle;
 
 	UPROPERTY(EditDefaultsOnly)
 	EGameState CurrentGameState = EGameState::Playing;

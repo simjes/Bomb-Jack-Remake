@@ -18,14 +18,23 @@ void ABombJackieGameState::BeginPlay()
 void ABombJackieGameState::HandleGameOver()
 {
 	CurrentGameState = EGameState::GameOver;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.5f);
 
-	if (GameOverWidgetReference)
-	{
-		GameOverWidget = CreateWidget(GetWorld(), GameOverWidgetReference);
-		GameOverWidget->AddToViewport();
-	}
 
-	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	GetWorld()->GetTimerManager().SetTimer(
+		PauseOnGameOverTimerHandle,
+		FTimerDelegate::CreateLambda([this]()
+		{
+			if (GameOverWidgetReference)
+			{
+				GameOverWidget = CreateWidget(GetWorld(), GameOverWidgetReference);
+				GameOverWidget->AddToViewport();
+			}
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+		}),
+		2.0f,
+		false
+	);
 }
 
 void ABombJackieGameState::HandleVictory()
