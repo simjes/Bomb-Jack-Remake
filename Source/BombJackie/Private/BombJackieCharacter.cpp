@@ -56,6 +56,11 @@ ABombJackieCharacter::ABombJackieCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+FGenericTeamId ABombJackieCharacter::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
 void ABombJackieCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings

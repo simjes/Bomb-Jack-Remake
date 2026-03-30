@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "BombJackieCharacter.generated.h"
@@ -19,7 +20,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  Implements a controllable orbiting camera
  */
 UCLASS(abstract)
-class ABombJackieCharacter : public ACharacter
+class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 	
@@ -32,6 +33,8 @@ class ABombJackieCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+	
+	FGenericTeamId TeamId = FGenericTeamId(0);
 
 protected:
 	/** Jump Input Action */
@@ -56,6 +59,8 @@ protected:
 public:
 	/** Constructor */
 	ABombJackieCharacter();
+	
+	virtual FGenericTeamId GetGenericTeamId() const override;
 
 protected:
 	/** Initialize input action bindings */
