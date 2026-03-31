@@ -55,6 +55,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector LastSafeLocation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<AActor>> UnsafeLocations;
 
 public:
 	/** Constructor */
