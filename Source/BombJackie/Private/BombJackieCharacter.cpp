@@ -107,7 +107,18 @@ void ABombJackieCharacter::Look(const FInputActionValue& Value)
 
 void ABombJackieCharacter::Landed(const FHitResult& Hit)
 {
-	LastSafeLocation = Hit.Location;
+	UClass* HitActorClass = Hit.GetActor()->GetClass();
+	
+	bool IsUnsafeLocation = UnsafeLocations.Contains(HitActorClass) || UnsafeLocations.ContainsByPredicate( [HitActorClass](const TSubclassOf<AActor>& UnsafeLocationActorClass)
+	{
+		return HitActorClass->IsChildOf(UnsafeLocationActorClass);
+	});
+	
+	if (!IsUnsafeLocation)
+	{
+		LastSafeLocation = Hit.Location;
+	}
+	
 	Super::Landed(Hit);
 }
 
