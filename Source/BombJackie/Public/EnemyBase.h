@@ -3,32 +3,56 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AttackInterface.h"
 #include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "EnemyBase.generated.h"
 
 UCLASS()
-class BOMBJACKIE_API AEnemyBase : public ACharacter, public IGenericTeamAgentInterface
+class BOMBJACKIE_API AEnemyBase : public ACharacter, public IGenericTeamAgentInterface, public IAttackInterface
 {
 	GENERATED_BODY()
 
 	FGenericTeamId TeamId = FGenericTeamId(1);
 	
-public:
-	// Sets default values for this character's properties
-	AEnemyBase();
+	FTimerHandle PlayIdleSoundsTimerHandle;
+	FTimerHandle AttackCooldownTimerHandle;
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool Attacking = false;
+	
+	AEnemyBase();
+
 	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual void Attack_Implementation() override;
 
 protected:
-	// Called when the game starts or when spawned
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	float MinTimeBetweenIdleSoundPlay = 3.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	float MaxTimeBetweenIdleSoundPlay = 6.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* IdleSounds;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* AttackSound;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* DeathSound;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float AttackCooldown = 3.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool IsSeeingThePlayer = false;
+	
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
+	void PlayIdleSounds();
+	void ScheduleNextIdleSound();
+	void ResetAttackCooldown();
 };
