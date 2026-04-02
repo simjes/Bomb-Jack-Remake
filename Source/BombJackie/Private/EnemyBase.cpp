@@ -3,12 +3,13 @@
 
 #include "EnemyBase.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 FGenericTeamId AEnemyBase::GetGenericTeamId() const
@@ -16,24 +17,48 @@ FGenericTeamId AEnemyBase::GetGenericTeamId() const
 	return TeamId;
 }
 
+void AEnemyBase::Attack_Implementation()
+{
+	Attacking = true;
+	GetWorldTimerManager().SetTimer(AttackCooldownTimerHandle, this, &AEnemyBase::ResetAttackCooldown, AttackCooldown, false);
+	
+	if (AttackSound)
+	{
+		UGameplayStatics::SpawnSoundAttached(AttackSound, GetMesh());
+	}
+}
+
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	ScheduleNextIdleSound();
 }
 
-// Called every frame
-void AEnemyBase::Tick(float DeltaTime)
+void AEnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::Tick(DeltaTime);
-
+	GetWorldTimerManager().ClearTimer(PlayIdleSoundsTimerHandle);
+	GetWorldTimerManager().ClearTimer(AttackCooldownTimerHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
-// Called to bind functionality to input
-void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AEnemyBase::PlayIdleSounds()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	if (IdleSounds)
+	{
+		UGameplayStatics::SpawnSoundAttached(IdleSounds, GetMesh());
+		
+		ScheduleNextIdleSound();
+	}
 }
 
+void AEnemyBase::ScheduleNextIdleSound()
+{
+	float IdleSoundDelay = FMath::RandRange(MinTimeBetweenIdleSoundPlay, MaxTimeBetweenIdleSoundPlay);
+	GetWorldTimerManager().SetTimer(PlayIdleSoundsTimerHandle, this, &AEnemyBase::PlayIdleSounds, IdleSoundDelay, false);
+}
+
+void AEnemyBase::ResetAttackCooldown()
+{
+	Attacking = false;
+}
