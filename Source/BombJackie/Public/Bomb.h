@@ -3,24 +3,86 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BombCountdown.h"
+#include "NiagaraSystem.h"
+#include "PickupInterface.h"
 #include "GameFramework/Actor.h"
 #include "Bomb.generated.h"
 
+static const FName MeshNameDefault = "SM_BlackBomb";
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBombExplode, ABomb*, Instigator, int, Damage);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBombDefuse, ABomb*, Instigator);
+
 UCLASS()
-class BOMBJACKIE_API ABomb : public AActor
+class BOMBJACKIE_API ABomb : public AActor, public IPickupInterface
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+	FTimerHandle ExplodeCountdownTimerHandle;
+
+	UPROPERTY()
+	UBombCountdown* CountdownWidget;
+
+	UPROPERTY(EditAnywhere)
+	float MinPulseScale = 0.8f;
+
+	UPROPERTY(EditAnywhere)
+	float MaxPulseScale = 1.2f;
+
+public:
 	ABomb();
 
+	virtual void Pickup_Implementation() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ExplodeCountdown = 15.0f;
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-public:	
-	// Called every frame
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsLit = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Damage = 1;
+
+	UFUNCTION(BlueprintCallable)
+	void LightFuse();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UStaticMesh* LitBombMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UNiagaraSystem* ExplodeNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	TSubclassOf<UCameraShakeBase> ExplodeCameraShake;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* FuseSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* DefuseSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* ExplodeSound;
+
+	UPROPERTY(EditAnywhere, Category= "UI")
+	TSubclassOf<UBombCountdown> CountdownWidgetClass;
+
+public:
 	virtual void Tick(float DeltaTime) override;
+	void Explode();
 
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnBombExplode OnBombExplode;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnBombDefuse OnBombDefuse;
 };

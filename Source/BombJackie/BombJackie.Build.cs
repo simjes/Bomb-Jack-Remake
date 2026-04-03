@@ -19,10 +19,11 @@ public class BombJackie : ModuleRules
 			"GameplayStateTreeModule",
 			"UMG",
 			"Slate",
-            "NavigationSystem"
+            "NavigationSystem",
+            "Niagara"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"BombJackie",
