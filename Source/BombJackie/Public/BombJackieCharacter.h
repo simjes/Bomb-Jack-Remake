@@ -59,6 +59,39 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSubclassOf<AActor>> UnsafeLocations;
 
+	/** Jump button being held? */
+	UPROPERTY(BlueprintReadWrite, Category = "Jump|Hover")
+	bool bJumpButtonHeld = false;
+
+	/** Double jump been used? */
+	UPROPERTY(BlueprintReadWrite, Category = "Jump|Hover")
+	bool bDoubleJumpUsed = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Jump|Hover")
+	bool bIsHoverActive = false;
+	
+	/** Called when jump button is pressed */
+	UFUNCTION(BlueprintCallable, Category = "Jump|Hover")
+	void OnJumpButtonPressed();
+
+	/** Called when jump button is held */
+	UFUNCTION(BlueprintCallable, Category = "Jump|Hover")
+	void OnJumpButtonHeld();
+	
+	
+	
+	/**Event for hovering*/
+	UFUNCTION(BlueprintImplementableEvent, Category = "Jump|Hover")
+	void OnJumpHeldHoverCheck();
+	
+	/** Called when jump button is released */
+	UFUNCTION(BlueprintCallable, Category = "Jump|Hover")
+	void OnJumpButtonReleased();
+	
+	/** Called when button released or character landed */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Jump|Hover")
+	void OnHoverCancel();
+	
 public:
 	/** Constructor */
 	ABombJackieCharacter();
@@ -85,14 +118,7 @@ public:
 	/** Handles look inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(float Yaw, float Pitch);
-
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
-
-	/** Handles jump pressed inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
+	
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

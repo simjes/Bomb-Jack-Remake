@@ -66,9 +66,16 @@ void ABombJackieCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		
+		// Jump pressed
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABombJackieCharacter::OnJumpButtonPressed);
+        
+		// Jump held — fires every frame while held
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABombJackieCharacter::OnJumpButtonHeld);
+        
+		// Jump released
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABombJackieCharacter::OnJumpButtonReleased);
+
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABombJackieCharacter::Move);
@@ -107,6 +114,17 @@ void ABombJackieCharacter::Look(const FInputActionValue& Value)
 
 void ABombJackieCharacter::Landed(const FHitResult& Hit)
 {
+	
+	
+	//reset bools used for hover stuff
+	bDoubleJumpUsed = false;
+	bJumpButtonHeld = false;
+	if (bIsHoverActive)
+	{
+		bIsHoverActive = false;
+		OnHoverCancel();
+	}
+	
 	UClass* HitActorClass = Hit.GetActor()->GetClass();
 	
 	bool IsUnsafeLocation = UnsafeLocations.Contains(HitActorClass) || UnsafeLocations.ContainsByPredicate( [HitActorClass](const TSubclassOf<AActor>& UnsafeLocationActorClass)
@@ -152,14 +170,40 @@ void ABombJackieCharacter::DoLook(float Yaw, float Pitch)
 	}
 }
 
-void ABombJackieCharacter::DoJumpStart()
+//Hover friendly jump function, which tracks if the button is held
+void ABombJackieCharacter::OnJumpButtonPressed()
 {
-	// signal the character to jump
+	bJumpButtonHeld = true;
 	Jump();
 }
 
-void ABombJackieCharacter::DoJumpEnd()
+//Hover friendly StopJumping function, which tracks if the button is held
+void ABombJackieCharacter::OnJumpButtonReleased()
 {
-	// signal the character to stop jumping
+	bJumpButtonHeld = false;
 	StopJumping();
+    
+	// Cancel hover if it was active
+	if (bIsHoverActive)
+	{
+		bIsHoverActive = false;
+		OnHoverCancel();  
+	}
+}
+
+void ABombJackieCharacter::OnJumpButtonHeld()
+{
+	
+	if (bDoubleJumpUsed && 
+		GetCharacterMovement()->IsFalling() && 
+		GetVelocity().Z <= 0.0f)
+	{
+		if (!bIsHoverActive)
+		{
+			// FIRST FRAME — activate hover
+			bIsHoverActive = true;
+			OnJumpHeldHoverCheck();
+		}
+		
+	}
 }
