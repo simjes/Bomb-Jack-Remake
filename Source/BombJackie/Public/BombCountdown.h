@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "BombCountdown.generated.h"
 
+class UImage;
+class UTextBlock;
 class ABomb;
 
 UENUM(BlueprintType)
@@ -46,11 +48,30 @@ class BOMBJACKIE_API UBombCountdown : public UUserWidget
 	UPROPERTY()
 	APlayerController* Controller;
 	
+	FTimerHandle CountdownTimerHandle;
+	
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeDestruct() override;
 	
 	float CalculateArrowRotation(float DrawPositionX, float DrawPositionY, FVector2D& TargetScreenPosition);
 	
+protected:
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UTextBlock> CountdownText;
+	
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UImage> ArrowPointer;
+	
+	float CountdownTime;
+	
 public:
+	UPROPERTY()
+	ABomb* Bomb;
+	
 	UFUNCTION(BlueprintCallable)
-	FCountdownRenderResult GetDrawPosition(ABomb* Bomb);
+	FCountdownRenderResult GetDrawPosition();
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateCountdown();
 };
