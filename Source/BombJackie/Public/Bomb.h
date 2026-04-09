@@ -5,18 +5,16 @@
 #include "CoreMinimal.h"
 #include "BombCountdown.h"
 #include "NiagaraSystem.h"
-#include "PickupInterface.h"
+#include "PickupBase.h"
 #include "GameFramework/Actor.h"
 #include "Bomb.generated.h"
-
-static const FName MeshNameDefault = "SM_BlackBomb";
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBombExplode, ABomb*, Instigator, int, Damage);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBombDefuse, ABomb*, Instigator);
 
 UCLASS()
-class BOMBJACKIE_API ABomb : public AActor, public IPickupInterface
+class BOMBJACKIE_API ABomb : public APickupBase
 {
 	GENERATED_BODY()
 
@@ -52,9 +50,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void LightFuse();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* StaticMesh;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMesh* LitBombMesh;
 
@@ -66,9 +61,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* FuseSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	USoundBase* DefuseSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* ExplodeSound;

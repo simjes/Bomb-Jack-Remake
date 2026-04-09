@@ -23,7 +23,7 @@ UCLASS(abstract)
 class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
-	
+
 	virtual void BeginPlay() override;
 
 	/** Camera boom positioning the camera behind the character */
@@ -33,7 +33,7 @@ class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterfac
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	
+
 	FGenericTeamId TeamId = FGenericTeamId(0);
 
 protected:
@@ -52,10 +52,10 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector LastSafeLocation;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSubclassOf<AActor>> UnsafeLocations;
 
@@ -69,7 +69,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Jump|Hover")
 	bool bIsHoverActive = false;
-	
+
 	/** Called when jump button is pressed */
 	UFUNCTION(BlueprintCallable, Category = "Jump|Hover")
 	void OnJumpButtonPressed();
@@ -77,25 +77,30 @@ protected:
 	/** Called when jump button is held */
 	UFUNCTION(BlueprintCallable, Category = "Jump|Hover")
 	void OnJumpButtonHeld();
-	
-	
-	
+
+
 	/**Event for hovering*/
 	UFUNCTION(BlueprintImplementableEvent, Category = "Jump|Hover")
 	void OnJumpHeldHoverCheck();
-	
+
 	/** Called when jump button is released */
 	UFUNCTION(BlueprintCallable, Category = "Jump|Hover")
 	void OnJumpButtonReleased();
-	
+
 	/** Called when button released or character landed */
 	UFUNCTION(BlueprintImplementableEvent, Category = "Jump|Hover")
 	void OnHoverCancel();
-	
+
 public:
 	/** Constructor */
 	ABombJackieCharacter();
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	int CoinCount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	int CoinsRequiredForSuperState = 100;
+
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 protected:
@@ -107,7 +112,7 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-	
+
 	virtual void Landed(const FHitResult& Hit) override;
 
 public:
@@ -118,7 +123,12 @@ public:
 	/** Handles look inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(float Yaw, float Pitch);
-	
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
+	void OnEnterSuperState();
+
+	UFUNCTION()
+	void HandleCoinPickup();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
