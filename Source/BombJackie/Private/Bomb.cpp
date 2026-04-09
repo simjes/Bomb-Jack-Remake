@@ -9,18 +9,11 @@ ABomb::ABomb()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(MeshNameDefault);
-	RootComponent = StaticMesh;
 }
 
 void ABomb::Pickup_Implementation()
 {
-	if (DefuseSound)
-	{
-		UGameplayStatics::PlaySound2D(GetWorld(), DefuseSound);
-	}
-
+	Super::Pickup_Implementation();
 	if (CountdownWidget)
 	{
 		CountdownWidget->RemoveFromParent();
@@ -49,19 +42,19 @@ void ABomb::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ABomb::LightFuse()
 {
 	IsLit = true;
-	StaticMesh->SetRenderCustomDepth(true);
+	PickupMesh->SetRenderCustomDepth(true);
 
 	if (LitBombMesh)
 	{
-		StaticMesh->SetStaticMesh(LitBombMesh);
+		PickupMesh->SetStaticMesh(LitBombMesh);
 	}
 
 	if (FuseSound)
 	{
-		UGameplayStatics::SpawnSoundAttached(FuseSound, StaticMesh, NAME_None, FVector::ZeroVector,
+		UGameplayStatics::SpawnSoundAttached(FuseSound, PickupMesh, NAME_None, FVector::ZeroVector,
 		                                     FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
 	}
-	
+
 	if (CountdownWidgetClass)
 	{
 		CountdownWidget = CreateWidget<UBombCountdown>(GetWorld(), CountdownWidgetClass);
@@ -80,7 +73,7 @@ void ABomb::Tick(float DeltaTime)
 	{
 		float ScaleValue = FMath::Lerp(MinPulseScale, MaxPulseScale,
 		                               (FMath::Sin(GetGameTimeSinceCreation() * 2) + 1.0f) / 2.0f);
-		StaticMesh->SetRelativeScale3D(FVector(ScaleValue));
+		PickupMesh->SetRelativeScale3D(FVector(ScaleValue));
 	}
 }
 
@@ -95,7 +88,7 @@ void ABomb::Explode()
 
 	if (ExplodeSound)
 	{
-		UGameplayStatics::SpawnSoundAttached(ExplodeSound, StaticMesh);
+		UGameplayStatics::SpawnSoundAttached(ExplodeSound, PickupMesh);
 	}
 
 	if (ExplodeNiagara)

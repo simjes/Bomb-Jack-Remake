@@ -66,15 +66,17 @@ void ABombJackieCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		
 		// Jump pressed
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABombJackieCharacter::OnJumpButtonPressed);
-        
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this,
+		                                   &ABombJackieCharacter::OnJumpButtonPressed);
+
 		// Jump held — fires every frame while held
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABombJackieCharacter::OnJumpButtonHeld);
-        
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this,
+		                                   &ABombJackieCharacter::OnJumpButtonHeld);
+
 		// Jump released
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABombJackieCharacter::OnJumpButtonReleased);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this,
+		                                   &ABombJackieCharacter::OnJumpButtonReleased);
 
 
 		// Moving
@@ -114,8 +116,6 @@ void ABombJackieCharacter::Look(const FInputActionValue& Value)
 
 void ABombJackieCharacter::Landed(const FHitResult& Hit)
 {
-	
-	
 	//reset bools used for hover stuff
 	bDoubleJumpUsed = false;
 	bJumpButtonHeld = false;
@@ -124,19 +124,20 @@ void ABombJackieCharacter::Landed(const FHitResult& Hit)
 		bIsHoverActive = false;
 		OnHoverCancel();
 	}
-	
+
 	UClass* HitActorClass = Hit.GetActor()->GetClass();
-	
-	bool IsUnsafeLocation = UnsafeLocations.Contains(HitActorClass) || UnsafeLocations.ContainsByPredicate( [HitActorClass](const TSubclassOf<AActor>& UnsafeLocationActorClass)
-	{
-		return HitActorClass->IsChildOf(UnsafeLocationActorClass);
-	});
-	
+
+	bool IsUnsafeLocation = UnsafeLocations.Contains(HitActorClass) || UnsafeLocations.ContainsByPredicate(
+		[HitActorClass](const TSubclassOf<AActor>& UnsafeLocationActorClass)
+		{
+			return HitActorClass->IsChildOf(UnsafeLocationActorClass);
+		});
+
 	if (!IsUnsafeLocation)
 	{
 		LastSafeLocation = Hit.Location;
 	}
-	
+
 	Super::Landed(Hit);
 }
 
@@ -170,6 +171,16 @@ void ABombJackieCharacter::DoLook(float Yaw, float Pitch)
 	}
 }
 
+void ABombJackieCharacter::HandleCoinPickup()
+{
+	CoinCount++;
+
+	if (CoinCount >= CoinsRequiredForSuperState)
+	{
+		OnEnterSuperState();
+	}
+}
+
 //Hover friendly jump function, which tracks if the button is held
 void ABombJackieCharacter::OnJumpButtonPressed()
 {
@@ -182,20 +193,19 @@ void ABombJackieCharacter::OnJumpButtonReleased()
 {
 	bJumpButtonHeld = false;
 	StopJumping();
-    
+
 	// Cancel hover if it was active
 	if (bIsHoverActive)
 	{
 		bIsHoverActive = false;
-		OnHoverCancel();  
+		OnHoverCancel();
 	}
 }
 
 void ABombJackieCharacter::OnJumpButtonHeld()
 {
-	
-	if (bDoubleJumpUsed && 
-		GetCharacterMovement()->IsFalling() && 
+	if (bDoubleJumpUsed &&
+		GetCharacterMovement()->IsFalling() &&
 		GetVelocity().Z <= 0.0f)
 	{
 		if (!bIsHoverActive)
@@ -204,6 +214,5 @@ void ABombJackieCharacter::OnJumpButtonHeld()
 			bIsHoverActive = true;
 			OnJumpHeldHoverCheck();
 		}
-		
 	}
 }
