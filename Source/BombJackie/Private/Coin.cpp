@@ -51,6 +51,7 @@ void ACoin::Tick(float DeltaSeconds)
 	if (PickupMesh->IsSimulatingPhysics())
 	{
 		PickupMesh->SetSimulatePhysics(false);
+		PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
 	FVector NewLocation = FMath::VInterpTo(

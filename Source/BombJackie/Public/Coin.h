@@ -19,7 +19,7 @@ class BOMBJACKIE_API ACoin : public APickupBase
 	ABombJackieCharacter* PlayerCharacter;
 
 	UPROPERTY(EditAnywhere)
-	float MagnetSpeed = 8;
+	float MagnetSpeed = 15;
 
 	UPROPERTY(EditAnywhere)
 	float MagnetRange = 300;
