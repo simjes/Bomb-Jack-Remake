@@ -3,12 +3,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
 #include "Blueprint/UserWidget.h"
 
 ABomb::ABomb()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	LitFuseNiagara = CreateDefaultSubobject<UNiagaraComponent>(LitFuseNiagaraName);
+	LitFuseNiagara->SetupAttachment(RootComponent);
+	LitFuseNiagara->SetAutoActivate(false);
 }
 
 void ABomb::Pickup_Implementation()
@@ -43,6 +48,11 @@ void ABomb::LightFuse()
 {
 	IsLit = true;
 	PickupMesh->SetRenderCustomDepth(true);
+
+	if (LitFuseNiagara->GetAsset())
+	{
+		LitFuseNiagara->Activate(true);
+	}
 
 	if (LitBombMesh)
 	{

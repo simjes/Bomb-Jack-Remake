@@ -9,6 +9,8 @@
 #include "GameFramework/Actor.h"
 #include "Bomb.generated.h"
 
+class UNiagaraComponent;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBombExplode, ABomb*, Instigator, int, Damage);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBombDefuse, ABomb*, Instigator);
@@ -17,6 +19,8 @@ UCLASS()
 class BOMBJACKIE_API ABomb : public APickupBase
 {
 	GENERATED_BODY()
+
+	const FName LitFuseNiagaraName = "LitFuseNiagara";
 
 	FTimerHandle ExplodeCountdownTimerHandle;
 
@@ -55,6 +59,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	UNiagaraSystem* ExplodeNiagara;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UNiagaraComponent* LitFuseNiagara;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	TSubclassOf<UCameraShakeBase> ExplodeCameraShake;
