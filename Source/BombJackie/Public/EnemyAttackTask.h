@@ -15,9 +15,6 @@ class BOMBJACKIE_API UEnemyAttackTask : public UStateTreeTaskBlueprintBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
-	float AcceptanceRadius = 80.0f;
-
 	UPROPERTY(EditAnywhere, Category = "Context")
 	AEnemyBase* AIPawn;
 
