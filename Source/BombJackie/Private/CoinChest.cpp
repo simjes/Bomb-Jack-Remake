@@ -58,14 +58,8 @@ void ACoinChest::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiv
 			// Audio
 			if (ChestBreakSound)
 			{
-				UGameplayStatics::SpawnSoundAttached(
-					ChestBreakSound, 
-					ChestComponent, 
-					NAME_None, 
-					FVector::ZeroVector, 
-					EAttachLocation::KeepRelativeOffset, 
-					true // Destroy automagically
-				);
+				// Playing the sound in the world so it doesn't get destroyed with the actor
+				UGameplayStatics::PlaySoundAtLocation(this, ChestBreakSound, GetActorLocation());
 			}
 
 			// actor destruction

@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "CoinSplosion.generated.h"
 
+class UBoxComponent;
+class USoundBase;
+
 UCLASS()
 class BOMBJACKIE_API ACoinSplosion : public AActor
 {
@@ -19,6 +22,25 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Components
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USceneComponent* DefaultSceneRoot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UBoxComponent* BoxComponent;
+
+	//Variables
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	int NumberOfCoinsToSpawn;
+
+	// Making a slot to plug in the coin in UE editor
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<AActor> CoinClass;
+
+	// Making a slot to plug in the sound in UE editor
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+	USoundBase* CoinFountainSound;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
