@@ -101,6 +101,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
 	int CoinsRequiredForSuperState = 100;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	bool IsDashing = false;
+	
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 protected:
