@@ -57,7 +57,7 @@ protected:
 	FVector LastSafeLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<AActor>> UnsafeLocations;
+	TArray<UObject*> UnsafeLocations;
 
 	/** Jump button being held? */
 	UPROPERTY(BlueprintReadWrite, Category = "Jump|Hover")
