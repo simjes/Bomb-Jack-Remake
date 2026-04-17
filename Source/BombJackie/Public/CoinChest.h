@@ -13,8 +13,8 @@ UCLASS()
 class BOMBJACKIE_API ACoinChest : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ACoinChest();
 
@@ -25,24 +25,22 @@ protected:
 	//Chest mesh
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* ChestComponent;
-	
+
 	//CoinSplosion call
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<AActor> CoinSplosionClass;
-	
+
 	//Audio
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	USoundBase* ChestBreakSound;
-	
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
+
+public:
 	//Hit event
-	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp,
+	                       bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse,
+	                       const FHitResult& Hit) override;
 
 private:
 	// Using bool here instead of the DoOnce node we used in BP
 	bool HasExploded = false;
-
 };
