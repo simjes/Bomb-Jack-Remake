@@ -127,10 +127,24 @@ void ABombJackieCharacter::Landed(const FHitResult& Hit)
 
 	UClass* HitActorClass = Hit.GetActor()->GetClass();
 
-	bool IsUnsafeLocation = UnsafeLocations.Contains(HitActorClass) || UnsafeLocations.ContainsByPredicate(
-		[HitActorClass](const TSubclassOf<AActor>& UnsafeLocationActorClass)
+	bool IsUnsafeLocation = UnsafeLocations.ContainsByPredicate(
+		[HitActorClass, &Hit](const UObject* UnsafeLocation)
 		{
-			return HitActorClass->IsChildOf(UnsafeLocationActorClass);
+			if (const UClass* ParentClass = Cast<UClass>(UnsafeLocation))
+			{
+				return HitActorClass->IsChildOf(ParentClass);
+			}
+
+			if (const UStaticMesh* UnsafeMesh = Cast<UStaticMesh>(UnsafeLocation))
+			{
+				if (const UStaticMeshComponent* MeshComponent = Hit.GetActor()->FindComponentByClass<
+					UStaticMeshComponent>())
+				{
+					return MeshComponent->GetStaticMesh() == UnsafeMesh;
+				}
+			}
+
+			return false;
 		});
 
 	if (!IsUnsafeLocation)

@@ -57,7 +57,7 @@ protected:
 	FVector LastSafeLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<AActor>> UnsafeLocations;
+	TArray<UObject*> UnsafeLocations;
 
 	/** Jump button being held? */
 	UPROPERTY(BlueprintReadWrite, Category = "Jump|Hover")
@@ -101,6 +101,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
 	int CoinsRequiredForSuperState = 100;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	bool IsDashing = false;
+	
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 protected:

@@ -25,11 +25,17 @@ void ACoin::BeginPlay()
 	{
 		IsMagnetic = true;
 	}, 1, false);
+
+	GetWorldTimerManager().SetTimer(SelfDestructTimerHandle, [this]
+	{
+		Destroy();
+	}, 30, false);
 }
 
 void ACoin::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(MagneticTimerHandle);
+	GetWorldTimerManager().ClearTimer(SelfDestructTimerHandle);
 	Super::EndPlay(EndPlayReason);
 }
 

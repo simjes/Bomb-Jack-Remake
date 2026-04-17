@@ -28,6 +28,8 @@ class BOMBJACKIE_API ACoin : public APickupBase
 	bool IsMagnetic = false;
 
 	FTimerHandle MagneticTimerHandle;
+	
+	FTimerHandle SelfDestructTimerHandle;
 
 	float GetDistanceToPlayer() const;
 
