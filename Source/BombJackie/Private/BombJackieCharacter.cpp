@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BombJackieCharacter.h"
+
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -11,11 +12,83 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "BombJackie.h"
+#include "BombJackieGameState.h"
+#include "MusicManager.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 void ABombJackieCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	LastSafeLocation = GetActorLocation();
+
+	if (ABombJackieGameState* GameState = Cast<ABombJackieGameState>(UGameplayStatics::GetGameState(GetWorld())))
+	{
+		MusicManager = GameState->GetMusicManager();
+	}
+}
+
+void ABombJackieCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(SuperStateTimerHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
+void ABombJackieCharacter::EndSuperState()
+{
+	bIsInSuperState = false;
+
+	if (SpawnedGlitter)
+	{
+		SpawnedGlitter->Deactivate();
+	}
+
+	DynamicMaterial->SetScalarParameterValue(TEXT("EmissiveStrength"), 0.0f);
+	DynamicMaterial = nullptr;
+
+	if (MusicManager)
+	{
+		MusicManager->ResetMusicSpeed();
+	}
+
+	EndFloat();
+}
+
+void ABombJackieCharacter::HandleEnterSuperState()
+{
+	CoinCount = CoinCount - CoinsRequiredForSuperState;
+	bIsInSuperState = true;
+
+	if (MusicManager)
+	{
+		MusicManager->SpeedUpMusic();
+	}
+
+	if (SuperStateSound)
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), SuperStateSound);
+	}
+
+	USkeletalMeshComponent* CharacterMesh = GetMesh();
+	DynamicMaterial = CharacterMesh->CreateDynamicMaterialInstance(0);
+	DynamicMaterial->SetScalarParameterValue(TEXT("EmissiveStrength"), 0.8f);
+
+	if (SuperGlitter)
+	{
+		SpawnedGlitter = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			SuperGlitter,
+			CharacterMesh,
+			NAME_None,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::Type::KeepRelativeOffset,
+			false
+		);
+	}
+
+	GetWorldTimerManager().SetTimer(SuperStateTimerHandle, this, &ABombJackieCharacter::EndSuperState,
+	                                SuperStateDuration, false);
 }
 
 ABombJackieCharacter::ABombJackieCharacter()
@@ -189,9 +262,14 @@ void ABombJackieCharacter::HandleCoinPickup()
 {
 	CoinCount++;
 
+	if (bIsInSuperState)
+	{
+		CoinCount = FMath::Min(CoinCount, 99);
+	}
+
 	if (CoinCount >= CoinsRequiredForSuperState)
 	{
-		OnEnterSuperState();
+		HandleEnterSuperState();
 	}
 }
 

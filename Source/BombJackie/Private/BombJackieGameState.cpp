@@ -2,7 +2,7 @@
 
 
 #include "BombJackieGameState.h"
-#include "BombJackieCharacter.h"
+#include "MusicManager.h"
 #include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,6 +13,10 @@ void ABombJackieGameState::BeginPlay()
 	CurrentGameState = EGameState::Playing;
 
 	OnPyramidHpChange.Broadcast(PyramidHp);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	MusicManager = GetWorld()->SpawnActor<AMusicManager>(MusicManagerClass, SpawnParams);
 }
 
 void ABombJackieGameState::HandleGameOver()
@@ -54,6 +58,11 @@ void ABombJackieGameState::HandleVictory()
 	}
 
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
+}
+
+AMusicManager* ABombJackieGameState::GetMusicManager()
+{
+	return MusicManager;
 }
 
 void ABombJackieGameState::BroadcastBombsChanged(const int Amount)

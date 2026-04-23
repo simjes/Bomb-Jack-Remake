@@ -8,6 +8,9 @@
 #include "Logging/LogMacros.h"
 #include "BombJackieCharacter.generated.h"
 
+class AMusicManager;
+class UNiagaraComponent;
+class UNiagaraSystem;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -26,6 +29,8 @@ class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterfac
 
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -34,9 +39,25 @@ class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterfac
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
+	UPROPERTY()
+	AMusicManager* MusicManager;
+
 	FGenericTeamId TeamId = FGenericTeamId(0);
 
+	FTimerHandle SuperStateTimerHandle;
+
+	void EndSuperState();
+
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> SpawnedGlitter = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial = nullptr;
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	UNiagaraSystem* SuperGlitter;
+
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* JumpAction;
@@ -91,6 +112,12 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Jump|Hover")
 	void OnHoverCancel();
 
+	UFUNCTION(BlueprintCallable, Category = "SuperState")
+	void HandleEnterSuperState();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* SuperStateSound;
+
 public:
 	/** Constructor */
 	ABombJackieCharacter();
@@ -103,7 +130,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
 	bool IsDashing = false;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	bool bIsInSuperState = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	float SuperStateDuration = 20;
+
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 protected:
@@ -128,7 +161,7 @@ public:
 	virtual void DoLook(float Yaw, float Pitch);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Events")
-	void OnEnterSuperState();
+	void EndFloat();
 
 	UFUNCTION()
 	void HandleCoinPickup();
