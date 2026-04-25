@@ -8,6 +8,8 @@
 #include "Logging/LogMacros.h"
 #include "BombJackieCharacter.generated.h"
 
+class UWidgetComponent;
+class UDashCooldownWidget;
 class AMusicManager;
 class UNiagaraComponent;
 class UNiagaraSystem;
@@ -46,6 +48,10 @@ class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterfac
 
 	FTimerHandle SuperStateTimerHandle;
 
+	FTimerHandle IsDashingResetTimerHandle;
+
+	FTimerHandle DashCooldownTimerHandle;
+
 	void EndSuperState();
 
 	UPROPERTY()
@@ -54,9 +60,21 @@ class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterfac
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial = nullptr;
 
+	UPROPERTY(EditAnywhere, Category= "Dash")
+	TSubclassOf<UUserWidget> DashCooldownWidgetReference;
+
+	UPROPERTY()
+	UDashCooldownWidget* DashCooldownWidget;
+
+	UPROPERTY(VisibleAnywhere, Category= "Dash")
+	UWidgetComponent* DashCooldownWidgetComponent;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
 	UNiagaraSystem* SuperGlitter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	UNiagaraSystem* DashWoosh;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -115,26 +133,47 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "SuperState")
 	void HandleEnterSuperState();
 
+	UFUNCTION(BlueprintCallable, Category = "Dash")
+	void ResetDashCooldown(bool IgnoreGroundCheck = false);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* SuperStateSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* DashSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	UForceFeedbackEffect* ControllerRumble;
 
 public:
 	/** Constructor */
 	ABombJackieCharacter();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "SuperState")
 	int CoinCount = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "SuperState")
 	int CoinsRequiredForSuperState = 100;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Dash")
+	float DashCooldown = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Dash")
 	bool IsDashing = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Dash")
+	bool bDashOnCooldown = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "SuperState")
 	bool bIsInSuperState = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Dash")
+	int DashVelocityStrengthXY = 600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Dash")
+	int DashVelocityStrengthZ = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "SuperState")
 	float SuperStateDuration = 20;
 
 	virtual FGenericTeamId GetGenericTeamId() const override;
@@ -165,6 +204,9 @@ public:
 
 	UFUNCTION()
 	void HandleCoinPickup();
+
+	UFUNCTION(BlueprintCallable)
+	void Dash();
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
