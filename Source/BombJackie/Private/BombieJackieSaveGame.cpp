@@ -15,25 +15,26 @@ UBombieJackieSaveGame* UBombieJackieSaveGame::LoadGameSettings()
 	bool SaveGameExist = UGameplayStatics::DoesSaveGameExist(SettingsSaveSlot, 0);
 	if (!SaveGameExist)
 	{
-		return SaveGameSettings(1.0f, 1.0f);
+		return SaveGameSettings(1.0f, 1.0f, false, false);
 	}
 
 	USaveGame* SaveGame = UGameplayStatics::LoadGameFromSlot(SettingsSaveSlot, 0);
 	if (!SaveGame)
 	{
-		return SaveGameSettings(1.0f, 1.0f);
+		return SaveGameSettings(1.0f, 1.0f, false, false);
 	}
 
 	UBombieJackieSaveGame* BombieJackieSaveGame = Cast<UBombieJackieSaveGame>(SaveGame);
 	if (!BombieJackieSaveGame)
 	{
-		return SaveGameSettings(1.0f, 1.0f);
+		return SaveGameSettings(1.0f, 1.0f, false, false);
 	}
 
 	return BombieJackieSaveGame;
 }
 
-UBombieJackieSaveGame* UBombieJackieSaveGame::SaveGameSettings(float MusicValue, float SFXValue)
+UBombieJackieSaveGame* UBombieJackieSaveGame::SaveGameSettings(float MusicValue, float SFXValue, bool ShowFPSValue,
+                                                               bool VSyncValue)
 {
 	UBombieJackieSaveGame* SaveGame = Cast<UBombieJackieSaveGame>(
 		UGameplayStatics::CreateSaveGameObject(StaticClass())
@@ -41,6 +42,8 @@ UBombieJackieSaveGame* UBombieJackieSaveGame::SaveGameSettings(float MusicValue,
 
 	SaveGame->MusicVolume = MusicValue;
 	SaveGame->SFXVolume = SFXValue;
+	SaveGame->ShowFPSCounter = ShowFPSValue;
+	SaveGame->VSyncEnabled = VSyncValue;
 
 	UGameplayStatics::SaveGameToSlot(SaveGame, SettingsSaveSlot, 0);
 
