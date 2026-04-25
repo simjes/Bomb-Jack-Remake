@@ -39,7 +39,7 @@ void ACoinSplosion::BeginPlay()
 			// try do adjust location, but always spawn
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 			// spawn dat cash
 			AActor* SpawnedCoin = GetWorld()->SpawnActor<AActor>(CoinClass, SpawnLocation, SpawnRotation, SpawnParams);

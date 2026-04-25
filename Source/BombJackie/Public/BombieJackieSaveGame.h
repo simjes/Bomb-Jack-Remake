@@ -15,6 +15,12 @@ class BOMBJACKIE_API UBombieJackieSaveGame : public USaveGame
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Graphics")
+	bool VSyncEnabled = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Graphics")
+	bool ShowFPSCounter = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 	float MusicVolume = 1.0f;
 
@@ -25,5 +31,6 @@ public:
 	static UBombieJackieSaveGame* LoadGameSettings();
 
 	UFUNCTION(BlueprintCallable)
-	static UBombieJackieSaveGame* SaveGameSettings(float MusicValue, float SFXValue);
+	static UBombieJackieSaveGame*
+	SaveGameSettings(float MusicValue, float SFXValue, bool ShowFPSValue, bool VSyncValue);
 };
