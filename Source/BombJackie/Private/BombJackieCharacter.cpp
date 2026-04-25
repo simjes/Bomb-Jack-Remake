@@ -13,15 +13,26 @@
 #include "InputActionValue.h"
 #include "BombJackie.h"
 #include "BombJackieGameState.h"
+#include "DashCooldownWidget.h"
 #include "MusicManager.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 void ABombJackieCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	LastSafeLocation = GetActorLocation();
+
+	if (DashCooldownWidgetReference)
+	{
+		DashCooldownWidgetComponent->SetWidgetClass(DashCooldownWidgetReference);
+		DashCooldownWidget = Cast<UDashCooldownWidget>(DashCooldownWidgetComponent->GetUserWidgetObject());
+		DashCooldownWidgetComponent->SetDrawSize(FVector2D(40, 40));
+		DashCooldownWidgetComponent->SetRelativeLocation(FVector(0, 0, 80));
+	}
 
 	if (ABombJackieGameState* GameState = Cast<ABombJackieGameState>(UGameplayStatics::GetGameState(GetWorld())))
 	{
@@ -32,6 +43,8 @@ void ABombJackieCharacter::BeginPlay()
 void ABombJackieCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(SuperStateTimerHandle);
+	GetWorldTimerManager().ClearTimer(DashCooldownTimerHandle);
+	GetWorldTimerManager().ClearTimer(IsDashingResetTimerHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -53,6 +66,19 @@ void ABombJackieCharacter::EndSuperState()
 	}
 
 	EndFloat();
+}
+
+void ABombJackieCharacter::ResetDashCooldown(bool IgnoreGroundCheck)
+{
+	if (IgnoreGroundCheck || GetCharacterMovement()->IsMovingOnGround())
+	{
+		bDashOnCooldown = false;
+
+		if (DashCooldownWidget)
+		{
+			DashCooldownWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
 }
 
 void ABombJackieCharacter::HandleEnterSuperState()
@@ -127,6 +153,11 @@ ABombJackieCharacter::ABombJackieCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+
+	DashCooldownWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DashCooldownWidget"));
+	DashCooldownWidgetComponent->SetupAttachment(GetMesh());
+	DashCooldownWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 }
 
 FGenericTeamId ABombJackieCharacter::GetGenericTeamId() const
@@ -196,6 +227,12 @@ void ABombJackieCharacter::Landed(const FHitResult& Hit)
 	{
 		bIsHoverActive = false;
 		OnHoverCancel();
+	}
+
+	if (!GetWorldTimerManager().IsTimerActive(DashCooldownTimerHandle))
+	{
+		// Dash cooldown resets when the player lands, if the dash cooldown timer has stopped
+		ResetDashCooldown(true);
 	}
 
 	UClass* HitActorClass = Hit.GetActor()->GetClass();
@@ -273,11 +310,84 @@ void ABombJackieCharacter::HandleCoinPickup()
 	}
 }
 
+void ABombJackieCharacter::Dash()
+{
+	if (bDashOnCooldown)
+	{
+		return;
+	}
+
+	IsDashing = true;
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (ControllerRumble && PlayerController)
+	{
+		PlayerController->ClientPlayForceFeedback(ControllerRumble);
+	}
+
+	if (DashSound)
+	{
+		UGameplayStatics::PlaySound2D(this, DashSound);
+	}
+
+	FVector ForwardVector = GetLastMovementInputVector();
+	if (ForwardVector.IsNearlyZero())
+	{
+		ForwardVector = GetActorRotation().Vector();
+	}
+
+	float LaunchVelocityX = ForwardVector.X * DashVelocityStrengthXY;
+	float LaunchVelocityY = ForwardVector.Y * DashVelocityStrengthXY;
+	float LaunchVelocityZ = GetActorUpVector().Z * DashVelocityStrengthZ;
+	LaunchCharacter(FVector(LaunchVelocityX, LaunchVelocityY, LaunchVelocityZ), false, false);
+
+	if (DashWoosh)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(
+			DashWoosh,
+			GetMesh(),
+			NAME_None,
+			FVector(0, 0, 50),
+			FRotator(-90, 0, -90),
+			EAttachLocation::Type::KeepRelativeOffset,
+			false
+		);
+	}
+
+	GetWorldTimerManager().SetTimer(IsDashingResetTimerHandle, [this]()
+	{
+		IsDashing = false;
+	}, 0.5, false);
+
+	if (bIsInSuperState)
+	{
+		// Early return if the player is in super state, we don't run the code that handles cooldown
+		return;
+	}
+
+	bDashOnCooldown = true;
+	if (DashCooldownWidget)
+	{
+		DashCooldownWidget->RestartDashCooldown(DashCooldown);
+		DashCooldownWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+
+	GetWorldTimerManager().SetTimer(DashCooldownTimerHandle, [this]()
+	{
+		ResetDashCooldown();
+	}, DashCooldown, false);
+}
+
 //Hover friendly jump function, which tracks if the button is held
 void ABombJackieCharacter::OnJumpButtonPressed()
 {
 	bJumpButtonHeld = true;
 	Jump();
+
+	if (JumpCurrentCount < 1)
+	{
+		ResetDashCooldown(true);
+	}
 }
 
 //Hover friendly StopJumping function, which tracks if the button is held
