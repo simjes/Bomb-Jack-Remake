@@ -22,13 +22,13 @@ class BOMBJACKIE_API ACoin : public APickupBase
 	float MagnetSpeed = 15;
 
 	UPROPERTY(EditAnywhere)
-	float MagnetRange = 300;
+	float MagnetRange = 1000;
 
 	UPROPERTY(EditAnywhere)
 	bool IsMagnetic = false;
 
 	FTimerHandle MagneticTimerHandle;
-	
+
 	FTimerHandle SelfDestructTimerHandle;
 
 	float GetDistanceToPlayer() const;
