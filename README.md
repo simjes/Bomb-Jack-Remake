@@ -1,3 +1,3 @@
-# BombJackie
+# Bombie Jackie
 
-Developed with Unreal Engine 5
+![Controller Layut](./ControllerLayout.png)
