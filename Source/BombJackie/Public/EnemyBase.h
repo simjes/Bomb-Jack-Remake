@@ -9,7 +9,7 @@
 #include "EnemyBase.generated.h"
 
 UCLASS()
-class BOMBJACKIE_API AEnemyBase : public ACharacter, public IGenericTeamAgentInterface, public IAttackInterface
+class BOMBJACKIE_API AEnemyBase : public ACharacter, public IGenericTeamAgentInterface, public IAttackInterface 
 {
 	GENERATED_BODY()
 
@@ -26,6 +26,9 @@ public:
 
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual void Attack_Implementation() override;
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat")
+	bool HandleDeath();
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Audio")

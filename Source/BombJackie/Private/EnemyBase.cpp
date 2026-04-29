@@ -28,6 +28,17 @@ void AEnemyBase::Attack_Implementation()
 	}
 }
 
+bool AEnemyBase::HandleDeath_Implementation()
+{
+	
+	if (DeathSound)
+	{
+		UGameplayStatics::SpawnSoundAttached(DeathSound, GetMesh());
+	}
+	
+	return true; 
+}
+
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
 {
