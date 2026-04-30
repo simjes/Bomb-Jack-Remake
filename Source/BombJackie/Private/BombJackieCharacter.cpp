@@ -20,6 +20,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "CineCameraComponent.h"
 
 void ABombJackieCharacter::BeginPlay()
 {
@@ -147,7 +148,7 @@ ABombJackieCharacter::ABombJackieCharacter()
 	CameraBoom->bUsePawnControlRotation = true;
 
 	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera = CreateDefaultSubobject<UCineCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 

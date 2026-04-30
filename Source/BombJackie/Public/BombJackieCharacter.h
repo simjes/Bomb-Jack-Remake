@@ -8,13 +8,13 @@
 #include "Logging/LogMacros.h"
 #include "BombJackieCharacter.generated.h"
 
+class UCineCameraComponent;
 class UWidgetComponent;
 class UDashCooldownWidget;
 class AMusicManager;
 class UNiagaraComponent;
 class UNiagaraSystem;
 class USpringArmComponent;
-class UCameraComponent;
 class UInputAction;
 struct FInputActionValue;
 
@@ -39,7 +39,7 @@ class ABombJackieCharacter : public ACharacter, public IGenericTeamAgentInterfac
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
+	UCineCameraComponent* FollowCamera;
 
 	UPROPERTY()
 	AMusicManager* MusicManager;
@@ -212,5 +212,5 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE class UCineCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };

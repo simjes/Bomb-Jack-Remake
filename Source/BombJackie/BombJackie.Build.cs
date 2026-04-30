@@ -24,7 +24,7 @@ public class BombJackie : ModuleRules
             "Niagara"
         });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { });
+        PrivateDependencyModuleNames.AddRange(new[] { "CinematicCamera" });
 
         PublicIncludePaths.AddRange(new[]
         {
